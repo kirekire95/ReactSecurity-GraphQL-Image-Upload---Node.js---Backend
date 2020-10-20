@@ -93,8 +93,7 @@ const Mutation = {
         errors.password = "Wrong credentials"
         throw new UserInputError("Wrong credentials", { errors })
       } else if (isValidPassword) {
-        const { password, ...rest } = foundUser
-        const userInfo = Object.assign({}, { ...rest })
+        const userInfo = foundUser
 
         console.log("Login Userinfo", userInfo)
 
@@ -190,6 +189,7 @@ const Mutation = {
       const savedUser = await newUser.save()
 
       if (savedUser) {
+        console.log("SAVEDUSESEERRERRERE", savedUser)
         const token = createToken(savedUser)
         const expiresAt = jwtDecodeToken(token).expiresAt
 
