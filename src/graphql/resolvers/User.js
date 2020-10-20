@@ -178,7 +178,7 @@ const Mutation = {
 
       const hashedPassword = await hashPassword(user.password)
 
-      const newUser = await new User({
+      const newUser = await new UserModel({
         username: user.username.toLowerCase().trim(),
         password: hashedPassword,
         email: user.email.toLowerCase().trim(),
