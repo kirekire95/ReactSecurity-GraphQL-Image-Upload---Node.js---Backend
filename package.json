@@ -29,11 +29,11 @@
     "graphql": "^15.3.0",
     "jsonwebtoken": "^8.5.1",
     "jwt-decode": "^3.0.0",
-    "mongoose": "^5.10.9"
+    "mongoose": "^5.10.9",
+    "morgan": "^1.10.0"
   },
   "devDependencies": {
     "husky": "^4.3.0",
-    "morgan": "^1.10.0",
     "nodemon": "^2.0.6",
     "prettier": "^2.1.2",
     "pretty-quick": "^3.1.0"
