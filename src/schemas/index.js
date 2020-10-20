@@ -2,7 +2,7 @@ import { gql } from "apollo-server-express"
 
 export const typeDefs = gql`
   type User {
-    id: ID!
+    _id: ID!
     username: String!
     password: String!
     confirmPassword: String!
@@ -10,38 +10,26 @@ export const typeDefs = gql`
     createdAt: String!
   }
 
-  type Retailer {
-    id: ID!
-    country: String!
-    gridHeading: String
-    header: String!
-    city: String!
-    address: String!
-    href: String
-    url: String
-    username: String!
-    createdAt: String!
-  }
-
   type Query {
     getUsers: [User]!
     getUser(userId: ID!): User
-    getRetailers: [Retailer]
-    getRetailer(retailerId: ID!): Retailer
   }
 
-  type Token {
+  type AuthenticationResult {
+    message: String
+    userInfo: User!
     token: String!
+    expiresAt: String!
   }
 
   type Mutation {
-    loginUser(username: String!, password: String!): Token
+    loginUser(username: String!, password: String!): AuthenticationResult
     addUser(
       username: String!
       password: String!
       confirmPassword: String!
       email: String!
-    ): User
+    ): AuthenticationResult
     editUser(
       userId: ID!
       username: String
@@ -50,25 +38,5 @@ export const typeDefs = gql`
       email: String
     ): User
     deleteUser(userId: ID!): User
-    addRetailer(
-      country: String!
-      gridHeading: String
-      header: String!
-      city: String!
-      address: String!
-      href: String
-      url: String
-    ): Retailer!
-    deleteRetailer(retailerId: ID!): Retailer
-    editRetailer(
-      retailerId: ID!
-      country: String!
-      gridHeading: String
-      header: String!
-      city: String!
-      address: String!
-      href: String
-      url: String
-    ): Retailer!
   }
 `

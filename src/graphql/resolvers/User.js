@@ -93,9 +93,6 @@ const Mutation = {
         errors.password = "Wrong credentials"
         throw new UserInputError("Wrong credentials", { errors })
       } else if (isValidPassword) {
-        console.log("User:", user)
-        console.log("foundUser Info:", foundUser)
-
         const { password, ...rest } = foundUser
         const userInfo = Object.assign({}, { ...rest })
 
@@ -214,8 +211,7 @@ const Mutation = {
           errors,
           token,
           expiresAt,
-          ...newUser._doc,
-          id: newUser._id
+          ...newUser._doc
         }
       } else {
         console.log("Something went wrong creating the account")
