@@ -38,7 +38,8 @@ const Query = {
 const Mutation = {
   loginUser: async (parent, user) => {
     try {
-      const foundUser = await UserModel.findOne({ username: user.username })
+      const { username, password } = user
+      const foundUser = await UserModel.findOne({ username })
 
       const errors = {}
 
@@ -47,19 +48,19 @@ const Mutation = {
           errors.username = "A user with that username could not be found!"
         }
 
-        if (user.username.trim() === "") {
+        if (username.trim() === "") {
           console.log("user.username is empty")
           errors.username = "Username must not be empty"
-        } else if (user.username.trim() !== "") {
+        } else if (username.trim() !== "") {
           console.log("user.username is not empty")
         } else {
           console.log("user.username else")
         }
 
-        if (user.password.trim() === "") {
+        if (password.trim() === "") {
           console.log("user.password is empty")
           errors.password = "Password must not be empty"
-        } else if (user.password.trim() !== "") {
+        } else if (password.trim() !== "") {
           console.log("user.password is not empty")
         } else {
           console.log("user.password else")
@@ -86,12 +87,9 @@ const Mutation = {
         console.log("No Errors", Object.keys(errors).length)
       }
 
-      const isValidPassword = await verifyPassword(
-        user.password,
-        foundUser.password
-      )
+      const isValidPassword = await verifyPassword(password, foundUser.password)
 
-      if (!isValidPassword && user.password !== "") {
+      if (!isValidPassword && password !== "") {
         errors.password = "Wrong credentials"
         throw new UserInputError("Wrong credentials", { errors })
       } else if (isValidPassword) {
@@ -103,6 +101,7 @@ const Mutation = {
         const expiresAt = jwtDecodeToken(token).expiresAt
 
         return {
+          userInfo,
           errors,
           token,
           expiresAt
@@ -115,10 +114,10 @@ const Mutation = {
   },
   addUser: async (parent, user) => {
     try {
-      const usernameExists = await UserModel.findOne({
-        username: user.username
-      })
-      const emailExists = await UserModel.findOne({ email: user.email })
+      const { username, email, password, confirmPassword } = user
+
+      const usernameExists = await UserModel.findOne({ username })
+      const emailExists = await UserModel.findOne({ email })
 
       const errors = {}
 
@@ -131,34 +130,34 @@ const Mutation = {
           errors.email = "This email has already been taken"
         }
 
-        if (user.username.trim() === "") {
+        if (username.trim() === "") {
           console.log("user.username is empty")
           errors.username = "Username must not be empty"
-        } else if (user.username.trim() !== "") {
+        } else if (username.trim() !== "") {
           console.log("user.username is not empty")
         } else {
           console.log("user.username else")
         }
 
-        if (user.password === "") {
+        if (password === "") {
           console.log("user.password is empty")
           errors.password = "Password must not be empty"
-        } else if (user.password.trim() !== "") {
+        } else if (password.trim() !== "") {
           console.log("user.password is not empty")
         } else {
           console.log("user.password else")
         }
 
-        if (user.password !== user.confirmPassword) {
+        if (password !== confirmPassword) {
           errors.confirmPassword = "Passwords must match"
         }
 
-        if (user.email.trim() === "") {
+        if (email.trim() === "") {
           errors.email = "Email must not be empty"
         } else {
           const regEx = /^([0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*@([0-9a-zA-Z][-\w]*[0-9a-zA-Z]\.)+[a-zA-Z]{2,9})$/
 
-          if (!user.email.match(regEx)) {
+          if (!email.match(regEx)) {
             errors.email = "Email must be a valid email address"
           }
         }
@@ -176,13 +175,14 @@ const Mutation = {
 
       console.log("The User", user)
 
-      const hashedPassword = await hashPassword(user.password)
+      const hashedPassword = await hashPassword(password)
 
       const newUser = await new UserModel({
-        username: user.username.toLowerCase().trim(),
+        username: username.toLowerCase().trim(),
         password: hashedPassword,
-        email: user.email.toLowerCase().trim(),
-        createdAt: new Date().toISOString()
+        email: email.toLowerCase().trim(),
+        createdAt: new Date().toISOString(),
+        role: "admin"
       })
 
       const savedUser = await newUser.save()
@@ -191,9 +191,21 @@ const Mutation = {
         const token = createToken(savedUser)
         const expiresAt = jwtDecodeToken(token).expiresAt
 
-        console.log("newUser here:", newUser)
+        console.log("savedUser here:", savedUser)
+
+        const { _id, username, password, email, createdAt, role } = savedUser
+
+        const userInfo = {
+          _id,
+          username,
+          password,
+          email,
+          createdAt,
+          role
+        }
 
         return {
+          userInfo,
           errors,
           token,
           expiresAt,
@@ -208,9 +220,12 @@ const Mutation = {
       throw error
     }
   },
-  editUser: async (parent, user) => {
+  editUser: async (parent, user, verifyJWT) => {
+    const checkAuthContext = checkAuth(verifyJWT)
+    console.log("CHECKAUTH", checkAuthContext)
     try {
-      const userExists = await UserModel.findById(user.userId)
+      const { userId, username, password, email } = user
+      const userExists = await UserModel.findById(userId)
       if (!userExists) {
         throw new UserInputError("A user with that ID could not be found", {
           error: {
@@ -219,18 +234,16 @@ const Mutation = {
         })
       }
 
-      const hashedPassword = await hashPassword(user.password)
+      const hashedPassword = await hashPassword(password)
 
-      const updatedUser = await UserModel.findByIdAndUpdate(user.userId, {
-        username: user.username,
+      const updatedUser = await UserModel.findByIdAndUpdate(userId, {
+        username: username,
         password: hashedPassword,
-        email: user.email
+        email: email
       })
 
       // Need .save()?
       // Need to log out and give new token here?...
-
-      console.log("the user", user)
 
       return {
         ...updatedUser._doc,
@@ -241,9 +254,11 @@ const Mutation = {
       throw error
     }
   },
-  deleteUser: async (parent, user) => {
+  deleteUser: async (parent, user, verifyJWT) => {
+    const checkAuthContext = checkAuth(verifyJWT)
     try {
-      const userExists = await UserModel.findById(user.userId)
+      const { userId } = user
+      const userExists = await UserModel.findById(userId)
       console.log(userExists)
 
       if (!userExists) {
@@ -254,7 +269,7 @@ const Mutation = {
         })
       }
 
-      const deletedUser = await UserModel.findByIdAndRemove(user.userId)
+      const deletedUser = await UserModel.findByIdAndRemove(userId)
 
       return {
         ...deletedUser._doc,

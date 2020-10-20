@@ -5,7 +5,11 @@ import jwtDecode from "jwt-decode"
 const createToken = (user) => {
   console.log("createToken User", user)
   return jwt.sign(
-    { username: user.username, email: user.email },
+    {
+      username: user.username,
+      email: user.email,
+      role: user.role
+    },
     process.env.SECRET,
     {
       expiresIn: "1h",
