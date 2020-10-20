@@ -96,11 +96,16 @@ const Mutation = {
         console.log("User:", user)
         console.log("foundUser Info:", foundUser)
 
-        const token = createToken(user)
-        console.log("token:", token)
+        const { password, ...rest } = foundUser
+        const userInfo = Object.assign({}, { ...rest })
+
+        console.log("Login Userinfo", userInfo)
+
+        const token = createToken(userInfo)
         const expiresAt = jwtDecodeToken(token).expiresAt
 
         return {
+          message: "Authentication successful!",
           userInfo,
           errors,
           token,
