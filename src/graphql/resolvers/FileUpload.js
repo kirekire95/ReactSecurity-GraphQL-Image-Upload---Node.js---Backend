@@ -23,7 +23,7 @@ const Mutation = {
     await stream.pipe(createWriteStream(pathName))
 
     return {
-      url: `http://localhost:4420/images/${randomName}`
+      url: `https://reactsecurity---backend.herokuapp.com/images/${randomName}`
     }
   }
 }
