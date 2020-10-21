@@ -101,7 +101,7 @@ const Mutation = {
         const expiresAt = jwtDecodeToken(token).expiresAt
 
         return {
-          message: "Authentication successful!",
+          message: "Authentication successful",
           userInfo,
           errors,
           token,
@@ -207,6 +207,7 @@ const Mutation = {
         }
 
         return {
+          message: "Account successfully created",
           userInfo,
           errors,
           token,
@@ -247,6 +248,7 @@ const Mutation = {
       // Need to log out and give new token here?...
 
       return {
+        message: "User edited successfully",
         ...updatedUser._doc,
         id: updatedUser._id
       }
@@ -273,6 +275,7 @@ const Mutation = {
       const deletedUser = await UserModel.findByIdAndRemove(userId)
 
       return {
+        message: "User deleted successfully",
         ...deletedUser._doc,
         id: deletedUser._id
       }
