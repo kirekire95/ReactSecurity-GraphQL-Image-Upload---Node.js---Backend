@@ -34,6 +34,8 @@ const startServer = async () => {
 
     server.applyMiddleware({ app, path: "/api/graphql" })
 
+    app.use(express.static("public"))
+
     app.listen({ port: PORT }, () => {
       console.log(
         chalk.hex("#897DDC")(
