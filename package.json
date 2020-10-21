@@ -17,7 +17,8 @@
   "homepage": "https://github.com/kirekire95/ReactSecurity---Node.js---Backend-#readme",
   "scripts": {
     "start": "node src/server.js",
-    "dev": "nodemon src/server.js"
+    "dev": "nodemon src/server.js",
+    "preinstall": "npx npm-force-resolutions"
   },
   "dependencies": {
     "apollo-server-express": "^2.18.2",
@@ -48,6 +49,7 @@
     "node": "^14"
   },
   "resolutions": {
-    "fs-capacitor": "^6"
+    "**/**/fs-capacitor": "^6",
+    "**/graphql-upload": "^11"
   }
 }
