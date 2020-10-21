@@ -49,7 +49,7 @@
     "node": "^14"
   },
   "resolutions": {
-    "**/**/fs-capacitor": "^6",
-    "**/graphql-upload": "^11"
+    "fs-capacitor": "^6.2.0",
+    "graphql-upload": "^11.0.0"
   }
 }
