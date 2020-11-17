@@ -5,6 +5,7 @@ import cors from "cors"
 import mongoose from "mongoose"
 import chalk from "chalk"
 import morgan from "morgan"
+import helmet from "helmet"
 
 import ApolloServer from "./ApolloServer.js"
 
@@ -26,6 +27,7 @@ const startServer = async () => {
     const app = express()
     app.use(express.json())
     app.use(cors())
+    app.use(helmet())
     if (process.env.NODE_ENV === "development") {
       app.use(morgan("dev"))
     }
