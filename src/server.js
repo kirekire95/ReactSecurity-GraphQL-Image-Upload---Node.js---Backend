@@ -25,9 +25,10 @@ const startServer = async () => {
     mongoose.connection.on("error", (error) => console.error(error))
 
     const app = express()
+
     app.use(express.json())
     app.use(cors())
-    app.use(helmet())
+
     if (process.env.NODE_ENV === "development") {
       app.use(morgan("dev"))
     }
@@ -37,6 +38,11 @@ const startServer = async () => {
     server.applyMiddleware({ app, path: "/api/graphql" })
 
     app.use(express.static("public"))
+    app.use(helmet())
+
+    app.get("/", (req, res) => {
+      return res.send("Received a GET HTTP method")
+    })
 
     app.listen({ port: PORT }, () => {
       console.log(
