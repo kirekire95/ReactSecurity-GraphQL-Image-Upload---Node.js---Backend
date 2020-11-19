@@ -37,11 +37,13 @@ const startServer = async () => {
 
     server.applyMiddleware({ app, path: "/api/graphql" })
 
-    app.use(express.static("public"))
     app.use(helmet())
+    app.use(express.static("public"))
 
     app.get("/", (req, res) => {
-      return res.send("Received a GET HTTP method")
+      return res.send(
+        "Head over to /api/graphql to enter the GraphQL Playground"
+      )
     })
 
     app.listen({ port: PORT }, () => {
