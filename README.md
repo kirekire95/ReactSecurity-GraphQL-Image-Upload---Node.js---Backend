@@ -6,3 +6,4 @@
 
 - Removed image upload - it has too many issues with its packages, and potential issues with type module for imports as well
 - Look into graphql shield or other schema auth directives for ReactSecurity Node.js Backend
+- Should not be able to edit its own username/email to be something that already exists
