@@ -11,10 +11,7 @@ const Query = {
         description: 1,
         category: 1
       })
-      return {
-        message: "Successfully queried all posts",
-        allPosts
-      }
+      return allPosts
     } catch (err) {
       throw new Error(err)
     }
@@ -25,10 +22,7 @@ const Query = {
     try {
       const onePost = await PostModel.findById(post.postId)
       if (onePost) {
-        return {
-          message: "Successfully queried one post.",
-          onePost
-        }
+        return onePost
       } else {
         throw new Error("Post not found")
       }
