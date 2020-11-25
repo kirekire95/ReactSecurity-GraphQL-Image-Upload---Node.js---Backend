@@ -11,7 +11,10 @@ const Query = {
         description: 1,
         category: 1
       })
-      return allPosts
+      return {
+        message: "Successfully queried all posts",
+        allPosts
+      }
     } catch (err) {
       throw new Error(err)
     }
@@ -22,7 +25,10 @@ const Query = {
     try {
       const onePost = await PostModel.findById(post.postId)
       if (onePost) {
-        return onePost
+        return {
+          message: "Successfully queried one post.",
+          onePost
+        }
       } else {
         throw new Error("Post not found")
       }
@@ -110,6 +116,7 @@ const Mutation = {
       console.log("new post here:", newPost)
 
       return {
+        message: "Post successfully created!",
         ...newPost._doc,
         id: newPost._id
       }
@@ -155,9 +162,9 @@ const Mutation = {
       console.log("the post", post)
 
       return {
+        message: "Post successfully updated!",
         ...updatedPost._doc,
-        id: updatedPost._id,
-        message: "Successfully updated the post!"
+        id: updatedPost._id
       }
     } catch (error) {
       console.log(error)
@@ -202,9 +209,9 @@ const Mutation = {
       }
 
       return {
+        message: "Post successfully deleted!",
         ...deletedPost._doc,
-        id: deletedPost._id,
-        message: "Post deleted successfully,"
+        id: deletedPost._id
       }
     } catch (error) {
       console.log(error)
