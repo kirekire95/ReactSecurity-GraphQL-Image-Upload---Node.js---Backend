@@ -1,4 +1,4 @@
-import { UserInputError } from "apollo-server-express"
+import { AuthenticationError, UserInputError } from "apollo-server-express"
 
 import { PostModel } from "../../models/Post.js"
 import checkAuth from "../../helper/context/index.js"
@@ -142,7 +142,7 @@ const Mutation = {
           category: post.category
         })
       } else {
-        throw new UserInputError(
+        throw new AuthenticationError(
           "You do not have permission to edit posts by another user",
           {
             error: {
@@ -191,7 +191,7 @@ const Mutation = {
       if (authenticatedUser.username === postExists.username) {
         deletedPost = await PostModel.findByIdAndRemove(post.postId)
       } else {
-        throw new UserInputError(
+        throw new AuthenticationError(
           "You do not have permission to delete posts by another user",
           {
             error: {

@@ -1,4 +1,4 @@
-import { UserInputError } from "apollo-server-express"
+import { UserInputError, AuthenticationError } from "apollo-server-express"
 
 import { UserModel } from "../../models/User.js"
 import checkAuth from "../../helper/context/index.js"
@@ -245,7 +245,7 @@ const Mutation = {
           email: email
         })
       } else {
-        throw new UserInputError(
+        throw new AuthenticationError(
           "You do not have permission to edit another user",
           {
             error: {
@@ -289,7 +289,7 @@ const Mutation = {
       if (authenticatedUser.username === userExists.username) {
         deletedUser = await UserModel.findByIdAndRemove(userId)
       } else {
-        throw new UserInputError(
+        throw new AuthenticationError(
           "You do not have permission to delete another user",
           {
             error: {
