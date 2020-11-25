@@ -19,7 +19,6 @@ const Query = {
     }
   },
   getUser: async (parent, user, verifyJWT) => {
-    console.log("verifyJWT", verifyJWT)
     const checkAuthContext = checkAuth(verifyJWT)
     console.log("checkAuthContext", checkAuthContext)
     try {
@@ -223,26 +222,38 @@ const Mutation = {
     }
   },
   editUser: async (parent, user, verifyJWT) => {
-    const checkAuthContext = checkAuth(verifyJWT)
-    console.log("CHECKAUTH", checkAuthContext)
+    const authenticatedUser = checkAuth(verifyJWT)
+    console.log("authenticatedUser", authenticatedUser)
     try {
       const { userId, username, password, email } = user
       const userExists = await UserModel.findById(userId)
       if (!userExists) {
         throw new UserInputError("A user with that ID could not be found", {
           error: {
-            ID: "A user with that ID could not be found"
+            editUser: "A user with that ID could not be found"
           }
         })
       }
 
       const hashedPassword = await hashPassword(password)
 
-      const updatedUser = await UserModel.findByIdAndUpdate(userId, {
-        username: username,
-        password: hashedPassword,
-        email: email
-      })
+      let updatedUser
+      if (authenticatedUser.username === userExists.username) {
+        updatedUser = await UserModel.findByIdAndUpdate(userId, {
+          username: username,
+          password: hashedPassword,
+          email: email
+        })
+      } else {
+        throw new UserInputError(
+          "You do not have permission to edit another user",
+          {
+            error: {
+              editUser: "You do not have permission to edit another user"
+            }
+          }
+        )
+      }
 
       // Need .save()?
       // Need to log out and give new token here?...
@@ -258,21 +269,35 @@ const Mutation = {
     }
   },
   deleteUser: async (parent, user, verifyJWT) => {
-    const checkAuthContext = checkAuth(verifyJWT)
+    const authenticatedUser = checkAuth(verifyJWT)
+    console.log("authenticatedUser", authenticatedUser)
     try {
       const { userId } = user
       const userExists = await UserModel.findById(userId)
-      console.log(userExists)
+      console.log("userExists", userExists)
 
       if (!userExists) {
         throw new UserInputError("A user with that ID could not be found", {
           error: {
-            ID: "A user with that ID could not be found"
+            deleteUser: "A user with that ID could not be found"
           }
         })
       }
 
-      const deletedUser = await UserModel.findByIdAndRemove(userId)
+      let deletedUser
+
+      if (authenticatedUser.username === userExists.username) {
+        deletedUser = await UserModel.findByIdAndRemove(userId)
+      } else {
+        throw new UserInputError(
+          "You do not have permission to delete another user",
+          {
+            error: {
+              deleteUser: "You do not have permission to delete another user"
+            }
+          }
+        )
+      }
 
       return {
         message: "User deleted successfully",

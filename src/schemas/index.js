@@ -8,11 +8,24 @@ export const typeDefs = gql`
     confirmPassword: String!
     email: String!
     createdAt: String!
+    message: String
+  }
+
+  type Post {
+    id: ID!
+    title: String!
+    description: String!
+    category: String!
+    username: String!
+    createdAt: String!
+    message: String
   }
 
   type Query {
     getUsers: [User]!
     getUser(userId: ID!): User
+    getPosts: [Post]
+    getPost(postId: ID!): Post
   }
 
   type AuthenticationResult {
@@ -38,5 +51,13 @@ export const typeDefs = gql`
       email: String
     ): User
     deleteUser(userId: ID!): User
+    addPost(title: String!, description: String!, category: String!): Post!
+    deletePost(postId: ID!): Post
+    editPost(
+      postId: ID!
+      title: String!
+      description: String!
+      category: String!
+    ): Post!
   }
 `
