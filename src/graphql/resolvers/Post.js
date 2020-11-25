@@ -20,7 +20,7 @@ const Query = {
     const authenticatedUser = checkAuth(verifyJWT)
     console.log("authenticatedUser", authenticatedUser)
     try {
-      const onePost = await UserModel.findById(post.postId)
+      const onePost = await PostModel.findById(post.postId)
       if (onePost) {
         return onePost
       } else {
