@@ -2,27 +2,18 @@ import { config } from "dotenv"
 config({ path: ".env.local" })
 import express from "express"
 import cors from "cors"
-import mongoose from "mongoose"
 import chalk from "chalk"
 import morgan from "morgan"
 import helmet from "helmet"
 
 import ApolloServer from "./ApolloServer.js"
+import { startMongoDB } from "./utilities/startMongo.js"
 
-const { MONGODB, PORT } = process.env
+const { PORT } = process.env
 
 const startServer = async () => {
   try {
-    await mongoose.connect(MONGODB, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      useCreateIndex: true,
-      useFindAndModify: false
-    })
-    mongoose.connection.once("open", () =>
-      console.log(chalk.hex("#897DDC")("Connected to MongoDB"))
-    )
-    mongoose.connection.on("error", (error) => console.error(error))
+    startMongoDB()
 
     const app = express()
 
